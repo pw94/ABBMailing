@@ -1,7 +1,8 @@
+using ABBMailing.Interfaces;
 using ABBMailing.Persistance;
+using ABBMailing.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace ABBMailing
         {
             services.AddDbContext<MailingContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddTransient<IMailingService, SendGridMailingService>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using ABBMailing.Interfaces;
 using ABBMailing.Persistance;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,12 @@ namespace ABBMailing.Controllers
     public class UnsubscribeController: Controller
     {
         private readonly MailingContext _context;
+        private readonly IMailingService _mailingService;
 
-        public UnsubscribeController(MailingContext context)
+        public UnsubscribeController(MailingContext context, IMailingService mailingService)
         {
             _context = context;
+            _mailingService = mailingService;
         }
 
         [HttpGet("[action]/{token}")]
@@ -23,7 +26,7 @@ namespace ABBMailing.Controllers
             {
                 address.Subscribed = false;
                 await _context.SaveChangesAsync();
-                // send mail
+                await _mailingService.SendUnsubscribeConfirmation(address.Email);
             }
             return RedirectToPage("/Unsubscribed");
         }

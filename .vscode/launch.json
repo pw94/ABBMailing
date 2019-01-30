@@ -30,7 +30,8 @@
                 }
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "SENDGRID_API_KEY": "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"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
