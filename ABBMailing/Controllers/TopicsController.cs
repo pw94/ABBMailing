@@ -19,7 +19,7 @@ namespace ABBMailing.Controllers
         [HttpGet("[action]")]
         public IActionResult List()
         {
-            return Json(_context.Topics);
+            return Json(_context.Topics.Select(t => new { Id = t.Id, Name = t.Name }));
         }
     }
 }

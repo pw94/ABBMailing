@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert } from 'reactstrap';
+import { Alert, Button, Form, FormGroup, Label, Input } from 'reactstrap';
 
 export class SignUpForm extends Component {
     static displayName = SignUpForm.name;
@@ -20,7 +20,7 @@ export class SignUpForm extends Component {
     }
 
     validateEmail() {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(String(this.state.email).toLowerCase());
     }
 
@@ -51,7 +51,6 @@ export class SignUpForm extends Component {
         let incorrectTopics = !this.validateTopics();
         this.setState({emailIncorrect: incorrectEmail, topicsIncorrect: incorrectTopics});
         if (!incorrectEmail && !incorrectTopics) {
-            alert('A name was submitted: ' + this.state.email + ' | ' + this.state.selectedTopics);
             fetch('api/Addresses', {
                 method: 'POST',
                 headers: {
@@ -63,40 +62,43 @@ export class SignUpForm extends Component {
                     topics: this.state.selectedTopics,
                 })
             })
+            .then(() => {
+                this.props.history.push('/');
+            });
         }
         event.preventDefault();
     }
 
     renderSubscriptionForm(topics) {
         return (
-            <form onSubmit={this.handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="exampleInputEmail">Email address</label>
-                    <input type="email" className="form-control" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter email" value={this.state.value} onChange={this.handleChangeEmail}></input>
+            <Form onSubmit={this.handleSubmit}>
+                <FormGroup>
+                    <Label for="exampleInputEmail">Email address</Label>
+                    <Input type="email" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter email" value={this.state.value} onChange={this.handleChangeEmail}></Input>
                 {this.state.emailIncorrect &&
                     <Alert color="danger">
-                        Please type in your email
+                        Please type in your correct email
                     </Alert>
                 }
-                </div>
-                <div>
+                </FormGroup>
+                <FormGroup>
                     <p>Topics</p>
                 {topics.map(topic =>
-                    <div className="form-check" key={topic.id}>
-                        <input className="form-check-input" type="checkbox" value={topic.id} id={'topicCheckbox' + topic.id} onChange={this.handleChangeTopic}></input>
-                        <label className="form-check-label" htmlFor={'topicCheckbox' + topic.id}>
+                    <FormGroup check key={topic.id}>
+                        <Label check>
+                        <Input type="checkbox" value={topic.id} id={'topicCheckbox' + topic.id} onChange={this.handleChangeTopic}></Input>
                             {topic.name}
-                        </label>
-                    </div>
+                        </Label>
+                    </FormGroup>
                 )}
                 {this.state.topicsIncorrect &&
                     <Alert color="danger">
                         Please select topics
                     </Alert>
                 }
-                </div>
-                <button type="submit" className="btn btn-primary">Submit</button>
-            </form>
+                </FormGroup>
+                <Button color="primary">Submit</Button>
+            </Form>
         );
     }
 
