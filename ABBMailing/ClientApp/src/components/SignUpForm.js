@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, Button, Form, FormGroup, Label, Input } from 'reactstrap';
 
-export class SignUpForm extends Component {
+export default class SignUpForm extends Component {
     static displayName = SignUpForm.name;
 
     constructor(props) {
