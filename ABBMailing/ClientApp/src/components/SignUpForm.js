@@ -11,12 +11,12 @@ export default class SignUpForm extends Component {
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangeTopic = this.handleChangeTopic.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
 
-        fetch('api/Topics/List')
-            .then(response => response.json())
-            .then(data => {
-                this.setState({ topics: data, loading: false });
-            });
+    async componentDidMount() {
+        let response = await fetch('api/Topics/List');
+        let data = response.json();
+        this.setState({ topics: data, loading: false });
     }
 
     validateEmail() {
