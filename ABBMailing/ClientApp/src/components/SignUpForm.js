@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, Button, Form, FormGroup, Label, Input } from 'reactstrap';
 
-export default class SignUpForm extends Component {
+export class SignUpForm extends Component {
     static displayName = SignUpForm.name;
 
     constructor(props) {
@@ -14,8 +14,7 @@ export default class SignUpForm extends Component {
     }
 
     async componentDidMount() {
-        let response = await fetch('api/Topics/List');
-        let data = response.json();
+        let data = await fetch('api/Topics/List').then(r => r.json());
         this.setState({ topics: data, loading: false });
     }
 

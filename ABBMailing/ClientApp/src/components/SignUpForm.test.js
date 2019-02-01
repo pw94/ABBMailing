@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
-import SignUpForm from './SignUpForm';
+import { SignUpForm } from './SignUpForm';
 
 describe('SignUpForm', function () {
   beforeEach(() => {
@@ -13,15 +13,28 @@ describe('SignUpForm', function () {
   
   it('renders without crashing', () => {
     fetch = mockFetch(this.topics);
-    
+
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
         <SignUpForm />
       </MemoryRouter>, div);
   });
+
+  it('fetch topics list during the rendering', () => {
+    fetch = mockFetch(this.topics);
+    
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <MemoryRouter>
+        <SignUpForm />
+      </MemoryRouter>, div);
+    
+    expect(fetch.mock.calls[0][0]).toBe('api/Topics/List');
+  });
   
-  it('sends POST when inserted email and selected at least one category', () => {
+  it('sends POST when inserted email and selected at least one category', (done) => {
+
   });
   
   it('shows alert and does not send POST when inserted incorrect email address', () => {
@@ -35,13 +48,13 @@ describe('SignUpForm', function () {
   it('hides alert when inserted correct email address after the incorrect one', () => {
     
   });
-  
-  function mockFetch(data) {
-    return jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => data
-      })
-    );
-  }
 });
+
+function mockFetch(data) {
+  return jest.fn().mockImplementation(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => data
+    })
+  );
+}
