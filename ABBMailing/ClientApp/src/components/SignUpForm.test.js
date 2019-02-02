@@ -1,8 +1,9 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { SignUpForm } from './SignUpForm';
 import { shallow, mount, render } from 'enzyme';
 import { expect } from 'chai';
+import { Form } from 'reactstrap';
+import { SignUpForm } from './SignUpForm';
 
 
 describe('SignUpForm', function () {
@@ -46,8 +47,19 @@ describe('SignUpForm', function () {
     expect(wrapper.find('[type="email"]')).to.have.lengthOf(1);
   });
 
-  it('sends POST when inserted email and selected at least one category', () => {
+  it('sends POST when inserted email and selected at least one category', async () => {
+    fetch = mockFetch(this.topics);
+    const wrapper = shallow(<SignUpForm history={[]} />);
+    await Promise.resolve();
 
+    wrapper.find('[type="email"]').simulate('change', { target: { value: 'user@server.com' } });
+    const checkboxValue = wrapper.find('[type="checkbox"]').get(0).props.value;
+    wrapper.find('[type="checkbox"]').first().simulate('change', { target: { checked: true, value: checkboxValue } });
+    wrapper.find(Form).simulate('submit', { preventDefault: jest.fn() });
+
+    expect(fetch.mock.calls.length).to.be.equal(2);
+    expect(fetch.mock.calls[1][0]).to.be.equal('api/Addresses');
+    expect(fetch.mock.calls[1][1].method).to.be.equal('POST');
   });
   
   it('shows alert and does not send POST when inserted incorrect email address', () => {

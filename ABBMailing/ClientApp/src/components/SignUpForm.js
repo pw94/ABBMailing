@@ -96,7 +96,7 @@ export class SignUpForm extends Component {
                     </Alert>
                 }
                 </FormGroup>
-                <Button color="primary">Submit</Button>
+                <Button type="submit" color="primary">Submit</Button>
             </Form>
         );
     }
