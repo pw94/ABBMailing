@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using ABBMailing.Controllers;
 using ABBMailing.Interfaces;
 using ABBMailing.Models;
@@ -30,8 +29,7 @@ namespace ABBMailing.Tests.Controllers
 
         private void MockMailingService()
         {
-            _mailingService.Setup(m => m.SendTopicsMail(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<string>()))
-                .Returns(Task.CompletedTask);
+            _mailingService.Setup(m => m.SendTopicsMail(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<string>()));
         }
         private void MockHttpContext()
         {
@@ -53,45 +51,45 @@ namespace ABBMailing.Tests.Controllers
         }
 
         [Fact]
-        public async Task Create_ReturnsCorrectResult()
+        public void Create_ReturnsCorrectResult()
         {
             var vm = new AddressViewModel { Email = "test@test.com", Topics = new[] { 1, 2 } };
 
-            var result = await _controller.Create(vm);
+            var result = _controller.Create(vm);
 
             Assert.IsType<OkResult>(result);
         }
 
         [Fact]
-        public async Task Create_SendsConfirmationMail()
+        public void Create_SendsConfirmationMail()
         {
             const string email = "test@test.com";
             var vm = new AddressViewModel { Email = email, Topics = new[] { 1, 2 } };
 
-            await _controller.Create(vm);
+            _controller.Create(vm);
 
             _mailingService.Verify(m => m.SendTopicsMail(email, It.IsAny<IEnumerable<string>>(), It.IsAny<string>()));
         }
 
         [Fact]
-        public async Task Create_ReturnsBadRequestObjectResult_WhenModelStateIsInvalid()
+        public void Create_ReturnsBadRequestObjectResult_WhenModelStateIsInvalid()
         {
             var vm = new AddressViewModel { Email = "test.invalid.com", Topics = new[] { 1, 2 } };
             _controller.ModelState.AddModelError("Email", "Email address format is invalid");
 
-            var result = await _controller.Create(vm);
+            var result = _controller.Create(vm);
 
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
         [Fact]
-        public async Task Create_ReturnsCorrectResult_WhenEmailAddressAlreadyExists()
+        public void Create_ReturnsCorrectResult_WhenEmailAddressAlreadyExists()
         {
             const string email = "test@server.com";
             CreateAddress(email);
             var vm = new AddressViewModel { Email = email, Topics = new[] { 1, 2 } };
 
-            var result = await _controller.Create(vm);
+            var result = _controller.Create(vm);
 
             Assert.IsType<OkResult>(result);
         }
@@ -104,26 +102,26 @@ namespace ABBMailing.Tests.Controllers
         }
 
         [Fact]
-        public async Task Create_DoesNotSaveNewAddress_WhenEmailAddressAlreadyExists()
+        public void Create_DoesNotSaveNewAddress_WhenEmailAddressAlreadyExists()
         {
             const string email = "test@server.com";
             CreateAddress(email);
             var vm = new AddressViewModel { Email = email, Topics = new[] { 1, 2 } };
             var addresesCount = _context.Addresses.Count();
 
-            await _controller.Create(vm);
+            _controller.Create(vm);
 
             Assert.Equal(addresesCount, _context.Addresses.Count());
         }
 
         [Fact]
-        public async Task Create_DoesNotSendConfirmationMail_WhenEmailAddressAlreadyExists()
+        public void Create_DoesNotSendConfirmationMail_WhenEmailAddressAlreadyExists()
         {
             const string email = "test@server.com";
             CreateAddress(email);
             var vm = new AddressViewModel { Email = email, Topics = new[] { 1, 2 } };
 
-            await _controller.Create(vm);
+            _controller.Create(vm);
 
             _mailingService.Verify(
                 m => m.SendTopicsMail(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<string>()),

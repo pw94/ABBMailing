@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using ABBMailing.Controllers;
 using ABBMailing.Interfaces;
 using ABBMailing.Models;
@@ -29,38 +28,38 @@ namespace ABBMailing.Tests.Controllers
         }
 
         [Fact]
-        public async Task Confirm_MakesAddressInactive()
+        public void Confirm_MakesAddressInactive()
         {
             var lastAddress = _context.Addresses.Last();
             var mailingService = new Mock<IMailingService>();
-            mailingService.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email)).Returns(Task.CompletedTask);
+            mailingService.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email));
             var controller = new UnsubscribeController(_context, mailingService.Object);
 
-            await controller.Confirm(lastAddress.UnsubscribeToken);
+            controller.Confirm(lastAddress.UnsubscribeToken);
 
             Assert.Equal(false, _context.Addresses.Last().Subscribed);
         }
 
         [Fact]
-        public async Task Confirm_SendsUnsubscriptionConfirmation()
+        public void Confirm_SendsUnsubscriptionConfirmation()
         {
             var lastAddress = _context.Addresses.Last();
             var mailingService = new Mock<IMailingService>();
-            mailingService.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email)).Returns(Task.CompletedTask);
+            mailingService.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email));
             var controller = new UnsubscribeController(_context, mailingService.Object);
 
-            await controller.Confirm(lastAddress.UnsubscribeToken);
+            controller.Confirm(lastAddress.UnsubscribeToken);
 
             mailingService.Verify(m => m.SendUnsubscribeConfirmation(lastAddress.Email));
         }
 
         [Fact]
-        public async Task Confirm_RedirectsToPageWhenPassedInvalidToken()
+        public void Confirm_RedirectsToPageWhenPassedInvalidToken()
         {
             var mailingService = new Mock<IMailingService>();
             var controller = new UnsubscribeController(_context, mailingService.Object);
 
-            var result = await controller.Confirm("Invalid token");
+            var result = controller.Confirm("Invalid token");
 
             Assert.IsType<RedirectToPageResult>(result);
         }

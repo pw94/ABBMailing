@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using ABBMailing.Interfaces;
 using Microsoft.Extensions.Configuration;
 using SendGrid;
@@ -23,14 +22,14 @@ namespace ABBMailing.Services
             var fromEmail = configuration["SenderDetails:email"];
             _from = new EmailAddress(fromEmail, fromName);
         }
-        public async Task SendTopicsMail(string email, IEnumerable<string> topics, string unsubscribeLink)
+        public void SendTopicsMail(string email, IEnumerable<string> topics, string unsubscribeLink)
         {
             var subject = "Thank you for subscribing to our service!";
             var to = new EmailAddress(email);
             var plainTextContent = BuildPlainTextContent(topics, unsubscribeLink);
             var htmlContent = BuildHtmlContent(topics, unsubscribeLink);
             var msg = MailHelper.CreateSingleEmail(_from, to, subject, plainTextContent, htmlContent);
-            await _client.SendEmailAsync(msg);
+            _client.SendEmailAsync(msg).Wait();
         }
 
         private string BuildHtmlContent(IEnumerable<string> topics, string unsubscribeLink)
@@ -65,14 +64,14 @@ namespace ABBMailing.Services
             return builder.ToString();
         }
 
-        public async Task SendUnsubscribeConfirmation(string email)
+        public void SendUnsubscribeConfirmation(string email)
         {
             var subject = "You unsubscribed from our service";
             var to = new EmailAddress(email);
             var plainTextContent = "<p>You unsubscribed from our service.<p>";
             var htmlContent = "You unsubscribed from our service.";
             var msg = MailHelper.CreateSingleEmail(_from, to, subject, plainTextContent, htmlContent);
-            await _client.SendEmailAsync(msg);
+            _client.SendEmailAsync(msg).Wait();
         }
     }
 }

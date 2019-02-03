@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using ABBMailing.Interfaces;
 using ABBMailing.Models;
 using ABBMailing.Persistance;
 using ABBMailing.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace ABBMailing.Controllers
 {
@@ -23,7 +21,7 @@ namespace ABBMailing.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]AddressViewModel newAddress)
+        public IActionResult Create([FromBody]AddressViewModel newAddress)
         {
             if (!ModelState.IsValid)
             {
@@ -35,14 +33,14 @@ namespace ABBMailing.Controllers
                 var topics = _context.Topics.Where(t => newAddress.Topics.Contains(t.Id));
                 var newToken = Guid.NewGuid().ToString();
 
-                await SaveAddress(newAddress, topics, newToken);
-                await SendMail(newAddress.Email, topics.Select(t => t.Name), newToken);
+                SaveAddress(newAddress, topics, newToken);
+                SendMail(newAddress.Email, topics.Select(t => t.Name), newToken);
             }
 
             return Ok();
         }
 
-        private async Task SaveAddress(AddressViewModel newAddress, IQueryable<Topic> topics, string token)
+        private void SaveAddress(AddressViewModel newAddress, IQueryable<Topic> topics, string token)
         {
             var address = new Address { Email = newAddress.Email.ToLower(), UnsubscribeToken = token };
             var addressTopics = topics.Select(t => new AddressTopic {Topic = t, Address = address});
@@ -50,13 +48,13 @@ namespace ABBMailing.Controllers
             _context.Addresses.Add(address);
             _context.AddressTopic.AddRange(addressTopics);
 
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 
-        private async Task SendMail(string email, IQueryable<string> topicNames, string token)
+        private void SendMail(string email, IQueryable<string> topicNames, string token)
         {
             var unsubscribeAddress = Url.Action("Confirm", "Unsubscribe", new { token = token }, Request.Scheme);
-            await _mailingService.SendTopicsMail(email, topicNames, unsubscribeAddress);
+            _mailingService.SendTopicsMail(email, topicNames, unsubscribeAddress);
         }
     }
 }

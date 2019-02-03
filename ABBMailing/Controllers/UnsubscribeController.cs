@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Threading.Tasks;
 using ABBMailing.Interfaces;
 using ABBMailing.Persistance;
 using Microsoft.AspNetCore.Mvc;
@@ -19,14 +18,14 @@ namespace ABBMailing.Controllers
         }
 
         [HttpGet("[action]/{token}")]
-        public async Task<IActionResult> Confirm(string token)
+        public IActionResult Confirm(string token)
         {
             var address = _context.Addresses.SingleOrDefault(a => a.UnsubscribeToken == token);
             if (address?.Subscribed == true)
             {
                 address.Subscribed = false;
-                await _context.SaveChangesAsync();
-                await _mailingService.SendUnsubscribeConfirmation(address.Email);
+                _context.SaveChanges();
+                _mailingService.SendUnsubscribeConfirmation(address.Email);
             }
             return RedirectToPage("/Unsubscribed");
         }
