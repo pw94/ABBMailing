@@ -5,6 +5,7 @@ using ABBMailing.Controllers;
 using ABBMailing.Interfaces;
 using ABBMailing.Models;
 using ABBMailing.Tests.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
@@ -30,16 +31,38 @@ namespace ABBMailing.Tests.Controllers
         [Fact]
         public async Task Confirm_MakesAddressInactive()
         {
-            var mock = new Mock<IMailingService>();
-            mock.Setup(m => m.SendUnsubscribeConfirmation(It.IsAny<string>())).Returns(Task.CompletedTask);
-            var controller = new UnsubscribeController(_context, mock.Object);
             var lastAddress = _context.Addresses.Last();
-            var token = lastAddress.UnsubscribeToken;
-            Assert.Equal(true, lastAddress.Subscribed);
+            var mock = new Mock<IMailingService>();
+            mock.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email)).Returns(Task.CompletedTask);
+            var controller = new UnsubscribeController(_context, mock.Object);
 
-            await controller.Confirm(token);
+            await controller.Confirm(lastAddress.UnsubscribeToken);
 
             Assert.Equal(false, _context.Addresses.Last().Subscribed);
+        }
+
+        [Fact]
+        public async Task Confirm_SendsUnsubscriptionConfirmation()
+        {
+            var lastAddress = _context.Addresses.Last();
+            var mock = new Mock<IMailingService>();
+            mock.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email)).Returns(Task.CompletedTask);
+            var controller = new UnsubscribeController(_context, mock.Object);
+
+            await controller.Confirm(lastAddress.UnsubscribeToken);
+
+            mock.Verify(m => m.SendUnsubscribeConfirmation(lastAddress.Email));
+        }
+
+        [Fact]
+        public async Task Confirm_RedirectsToPageWhenPassedInvalidToken()
+        {
+            var mock = new Mock<IMailingService>();
+            var controller = new UnsubscribeController(_context, mock.Object);
+
+            var result = await controller.Confirm("Invalid token");
+
+            Assert.IsType<RedirectToPageResult>(result);
         }
     }
 }
