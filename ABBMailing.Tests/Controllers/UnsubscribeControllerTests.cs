@@ -32,9 +32,9 @@ namespace ABBMailing.Tests.Controllers
         public async Task Confirm_MakesAddressInactive()
         {
             var lastAddress = _context.Addresses.Last();
-            var mock = new Mock<IMailingService>();
-            mock.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email)).Returns(Task.CompletedTask);
-            var controller = new UnsubscribeController(_context, mock.Object);
+            var mailingService = new Mock<IMailingService>();
+            mailingService.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email)).Returns(Task.CompletedTask);
+            var controller = new UnsubscribeController(_context, mailingService.Object);
 
             await controller.Confirm(lastAddress.UnsubscribeToken);
 
@@ -45,20 +45,20 @@ namespace ABBMailing.Tests.Controllers
         public async Task Confirm_SendsUnsubscriptionConfirmation()
         {
             var lastAddress = _context.Addresses.Last();
-            var mock = new Mock<IMailingService>();
-            mock.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email)).Returns(Task.CompletedTask);
-            var controller = new UnsubscribeController(_context, mock.Object);
+            var mailingService = new Mock<IMailingService>();
+            mailingService.Setup(m => m.SendUnsubscribeConfirmation(lastAddress.Email)).Returns(Task.CompletedTask);
+            var controller = new UnsubscribeController(_context, mailingService.Object);
 
             await controller.Confirm(lastAddress.UnsubscribeToken);
 
-            mock.Verify(m => m.SendUnsubscribeConfirmation(lastAddress.Email));
+            mailingService.Verify(m => m.SendUnsubscribeConfirmation(lastAddress.Email));
         }
 
         [Fact]
         public async Task Confirm_RedirectsToPageWhenPassedInvalidToken()
         {
-            var mock = new Mock<IMailingService>();
-            var controller = new UnsubscribeController(_context, mock.Object);
+            var mailingService = new Mock<IMailingService>();
+            var controller = new UnsubscribeController(_context, mailingService.Object);
 
             var result = await controller.Confirm("Invalid token");
 
