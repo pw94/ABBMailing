@@ -32,6 +32,7 @@ namespace ABBMailing.Tests.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(unsubscribeAddress);
             _controller.Url = urlHelper.Object;
         }
+        
         [Fact]
         public async Task Create_ReturnsCorrectResult()
         {
