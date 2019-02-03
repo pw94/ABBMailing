@@ -35,7 +35,7 @@ namespace ABBMailing.Services
         private string BuildHtmlContent(IEnumerable<string> topics, string unsubscribeLink)
         {
             var builder = new StringBuilder();
-            builder.Append("<strong>You subscribed to following topics:</strong>");
+            builder.Append("<strong>You subscribed to the following topics:</strong>");
             builder.Append("<ul>");
             foreach (var topic in topics)
             {
