@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ABBMailing.Controllers;
+using ABBMailing.Models;
 using ABBMailing.Tests.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -18,7 +18,7 @@ namespace ABBMailing.Tests.Controllers
             var result = controller.List();
 
             var objectResult = Assert.IsType<JsonResult>(result);
-            Assert.IsAssignableFrom<IEnumerable>(objectResult.Value);
+            Assert.IsAssignableFrom<IEnumerable<Topic>>(objectResult.Value);
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace ABBMailing.Tests.Controllers
             var result = controller.List();
 
             var objectResult = Assert.IsType<JsonResult>(result);
-            var topics = Assert.IsAssignableFrom<IEnumerable<object>>(objectResult.Value);
+            var topics = Assert.IsAssignableFrom<IEnumerable<Topic>>(objectResult.Value);
             Assert.Equal(10, topics.Count());
         }
     }

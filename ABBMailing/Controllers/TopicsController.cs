@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using ABBMailing.Models;
 using ABBMailing.Persistance;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +16,7 @@ namespace ABBMailing.Controllers
         [HttpGet("[action]")]
         public IActionResult List()
         {
-            return Json(_context.Topics.Select(t => new { Id = t.Id, Name = t.Name }));
+            return Json(_context.Topics);
         }
     }
 }
